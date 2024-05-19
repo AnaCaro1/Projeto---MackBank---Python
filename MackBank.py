@@ -1,10 +1,11 @@
 import random
 
+historico = []
 conta = int
 nome = ''
 telefone = ''
 email = ''
-saldo_inicial = 0
+saldo = 0
 limite = -1
 senha = ''
 action = int
@@ -53,7 +54,7 @@ def confirmar_senha(senha, bloquear):
 
 #Cadastro
     
-def cadastrar(conta,nome,telefone,email,saldo_inicial,limite,senha,cadastro_realizado,bloquear):
+def cadastrar(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico):
   print('\nMACK BANK - CADASTRO DA CONTA\n')
   conta = random.randint(1,9999)
   print(f'    Número da conta: {conta}\n')
@@ -70,9 +71,9 @@ def cadastrar(conta,nome,telefone,email,saldo_inicial,limite,senha,cadastro_real
     email = input('    Digite o e-mail do cliente: ')
     validar(email)
     
-  while not saldo_inicial >= 1000:
-    saldo_inicial = float(input('    Digite o saldo inicial da conta: '))
-    if saldo_inicial < 1000:
+  while not saldo >= 1000:
+    saldo = float(input('    Digite o saldo inicial da conta: '))
+    if saldo < 1000:
       print('    O saldo inicial deve ser maior ou igual a R$ 1000,00')
       
   while not limite >= 0:  
@@ -93,11 +94,11 @@ def cadastrar(conta,nome,telefone,email,saldo_inicial,limite,senha,cadastro_real
 
   fim = input('\n CADASTRO FINALIZADO! Pressione uma tecla para voltar ao menu ')
   cadastro_realizado = True
-  return main(conta,nome,telefone,email,saldo_inicial,limite,senha,cadastro_realizado,bloquear)
+  return main(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico)
 
 #Depósito
 
-def depositar(conta,nome,telefone,email,saldo_inicial,limite,senha,cadastro_realizado,bloquear):
+def depositar(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico):
   deposito = 0
   print('\nMACK BANK – DEPÓSITO DA CONTA\n')
 
@@ -107,43 +108,90 @@ def depositar(conta,nome,telefone,email,saldo_inicial,limite,senha,cadastro_real
     deposito = float(input('    Digite o valor do Depósito:  '))
     if deposito <= 0:
       print('    O valor deve ser maior que zero!')
-  saldo_inicial += deposito
+  saldo += deposito
 
-  print(f'\n    Depósito realizado com sucesso!\n')
+  historico.append(f'    Depósito de R$ {deposito:.2f}')
+  fim = input('\n DEPÓSITO REALIZADO COM SUCESSO! Pressione uma tecla para voltar ao menu ')
 
-  return main(conta,nome,telefone,email,saldo_inicial,limite,senha,cadastro_realizado,bloquear)
+  return main(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico)
 
 #Saque
 
-def sacar(conta,nome,telefone,email,saldo_inicial,limite,senha,cadastro_realizado,bloquear):
+def sacar(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico):
   saque = 0
   print('\nMACK BANK – SAQUE DA CONTA\n')
 
   confirmar_conta(conta,nome)
   bloquear = confirmar_senha(senha, bloquear)
   
-  while saque <= 0 or saque > saldo_inicial:
+  while saque <= 0 or saque > saldo:
     saque = float (input('    Digite o valor do Saque: '))
     if saque < 0:
       print('    O valor do saque deve ser maior que zero!')
-    elif saque > saldo_inicial:     
-      if saque <= (saldo_inicial + limite):
+    elif saque > saldo:     
+      if saque <= (saldo + limite):
         print('    Você está usando seu Limite de Crédito!')
-        saque -= saldo_inicial
-        saldo_inicial = 0
+        historico.append(f'    Saque de R$ {saque:.2f}')
+        saque -= saldo
+        saldo = 0
         limite -= saque
+        saldo -= saque
         break
       else:
         print('    Saldo insuficiente!')
     else:
-      saldo_inicial = saldo_inicial - saque
-      
-  print('    Saque realizado com sucesso!')
-  return main(conta,nome,telefone,email,saldo_inicial,limite,senha,cadastro_realizado,bloquear)
+      historico.append(f'    Saque de R$ {saque:.2f}')
+      saldo = saldo - saque
+      break
+
+  fim = input('\n SAQUE REALIZADO COM SUCESSO! Pressione uma tecla para voltar ao menu ')
+  return main(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico)
+
+#Consulta do Saldo
+
+def consultar_saldo(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico):
+  print('\nMACK BANK – CONSULTA DO SALDO\n')
+
+  confirmar_conta(conta,nome)
+  bloquear = confirmar_senha(senha, bloquear)
+
+  print(f'    Saldo em conta: R$ {saldo:.2f}')
+  print(f'    Limite de Crédito da conta: R$ {limite:.2f}')
+
+  fim = input('\nPressione uma tecla para voltar ao menu ')
+  return main(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico)
+  
+#Consulta do Extrato
+
+def consultar_extrato(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico):
+  print('\nMACK BANK – EXTRATO DA CONTA\n')
+
+  confirmar_conta(conta,nome)
+  bloquear = confirmar_senha(senha, bloquear)
+  
+  print(f'    Limite de Crédito da conta: R$ {limite:.2f}')
+  print('\n    ÚLTIMAS OPERAÇÕES:\n')
+
+  for item in historico:
+    print(item)
+    
+  print(f'    Saldo em conta: R$ {saldo:.2f}')
+  if saldo < 0:
+    print('    Atenção ao seu saldo!')
+  
+
+  fim = input('\nPressione uma tecla para voltar ao menu ')
+  return main(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico)
+
+#Finalização
+
+def finalizar(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico):
+  print('\nMACK BANK – SOBRE\n')
+  print('Este programa foi desenvolvido por:\n     Ana Carolina Pereira Banhos dos Santos - 10434541\n      Rafaella Cruciti Rangon - RA')
 
 #Menu
 
-def main(conta,nome,telefone,email,saldo_inicial,limite,senha,cadastro_realizado,bloquear):
+def main(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico):
   action = -1
   invalida = False
   print('\nMACK BANK – ESCOLHA UMA OPÇÃO\n')
@@ -160,14 +208,16 @@ def main(conta,nome,telefone,email,saldo_inicial,limite,senha,cadastro_realizado
     
   if invalida:
     if action == 1 and cadastro_realizado != True:
-      cadastrar(conta,nome,telefone,email,saldo_inicial,limite,senha,cadastro_realizado,bloquear)
+      cadastrar(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico)
     elif action == 2:
-      depositar(conta,nome,telefone,email,saldo_inicial,limite,senha,cadastro_realizado,bloquear)
+      depositar(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico)
     elif action == 3 and not bloquear:
-      sacar(conta,nome,telefone,email,saldo_inicial,limite,senha,cadastro_realizado,bloquear)
+      sacar(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico)
     elif action == 4 and not bloquear:
-      print()
+      consultar_saldo(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico)
     elif action == 5 and not bloquear:
-      print()
-    
-main(conta,nome,telefone,email,saldo_inicial,limite,senha,cadastro_realizado,bloquear)
+      consultar_extrato(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico)
+    elif action == 6 and not bloquear:
+      finalizar(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico)
+  
+main(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico)
