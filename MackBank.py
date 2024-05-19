@@ -26,7 +26,7 @@ def valida_action(action,invalida,cadastro_realizado):
     elif action == 1 and cadastro_realizado == True:
       print('\nVocê já possui um cadastro!\n')
     elif action > 1 and action <= 6 and cadastro_realizado != True:
-      print('    É necessário um cadastro! Tente novamente.')
+      print('\n    É necessário um cadastro! Tente novamente.\n')
     else:
       invalida = True
   return(action,invalida)
@@ -81,10 +81,10 @@ def cadastrar(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bl
     if limite < 0:
       print('    O limite de crédito não pode ser negativo!')
     
-  while not len(senha) >= 6:
+  while not len(senha) == 6:
     senha = input('    Digite a senha da conta: ')
-    if len(senha) < 6:
-      print('    A senha deve ter no mínimo 6 caracteres!')
+    if not len(senha) == 6:
+      print('    A senha deve possuir 6 caracteres!')
     
   confirm_senha = ''
   while not confirm_senha == senha:
@@ -192,10 +192,10 @@ def redefinir_senha(conta,nome,telefone,email,saldo,limite,senha,cadastro_realiz
   bloquear = confirmar_senha(senha, bloquear)
   nova_senha = ''
 
-  while not len(nova_senha) >= 6 or senha == nova_senha:
+  while not len(nova_senha) == 6 or senha == nova_senha:
     nova_senha = input('    Digite a nova senha da conta: ')
-    if len(nova_senha) < 6:
-      print('    A senha deve ter no mínimo 6 caracteres!')
+    if not len(nova_senha) == 6:
+      print('    A senha deve possuir 6 caracteres!')
     elif senha == nova_senha:
       print('    A senha não pode ser igual a anterior! Tente novamente.')
 
