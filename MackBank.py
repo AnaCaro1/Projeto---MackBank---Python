@@ -19,13 +19,13 @@ def validar(texto):
     print('    Preenchimento obrigatório! Tente novamente.')
 
 def valida_action(action,invalida,cadastro_realizado):
-  while action < 0 or action > 6:
+  while action < 0 or action > 7:
     action = int(input('SUA OPÇÃO: '))
-    if action < 0 or action > 6:
+    if action < 0 or action > 7:
       print('    Opção inválida! Tente novamente.')
     elif action == 1 and cadastro_realizado == True:
       print('\nVocê já possui um cadastro!\n')
-    elif action > 1 and action < 5 and cadastro_realizado != True:
+    elif action > 1 and action <= 6 and cadastro_realizado != True:
       print('    É necessário um cadastro! Tente novamente.')
     else:
       invalida = True
@@ -183,6 +183,32 @@ def consultar_extrato(conta,nome,telefone,email,saldo,limite,senha,cadastro_real
   fim = input('\nPressione uma tecla para voltar ao menu ')
   return main(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico)
 
+#Redefinir Senha
+
+def redefinir_senha(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico):
+  print('\nMACK BANK – REDEFINIR SENHA DA CONTA\n')
+  
+  confirmar_conta(conta,nome)
+  bloquear = confirmar_senha(senha, bloquear)
+  nova_senha = ''
+
+  while not len(nova_senha) >= 6 or senha == nova_senha:
+    nova_senha = input('    Digite a nova senha da conta: ')
+    if len(nova_senha) < 6:
+      print('    A senha deve ter no mínimo 6 caracteres!')
+    elif senha == nova_senha:
+      print('    A senha não pode ser igual a anterior! Tente novamente.')
+
+  confirm_senha = ''
+  while not confirm_senha == nova_senha:
+    confirm_senha = (input('    Confirme a nova senha da conta: '))
+    if confirm_senha != nova_senha:
+      print('    As senhas não coincidem!')
+
+  senha = nova_senha
+  fim = input('\nSENHA REDEFINIDA COM SUCESSO! Pressione uma tecla para voltar ao menu ')
+  return main(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico)
+
 #Finalização
 
 def finalizar(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico):
@@ -200,7 +226,8 @@ def main(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquea
   print('    3 – SACAR')
   print('    4 – CONSULTAR SALDO')
   print('    5 – CONSULTAR EXTRATO')
-  print('    6 – FINALIZAR\n')
+  print('    6 – REDEFINIR SENHA')
+  print('    7 - FINALIZAR\n')
 
   while invalida == False:
     action = -1
@@ -218,6 +245,8 @@ def main(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquea
     elif action == 5 and not bloquear:
       consultar_extrato(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico)
     elif action == 6 and not bloquear:
+      redefinir_senha(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico)
+    elif action == 7 and not bloquear:
       finalizar(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico)
   
 main(conta,nome,telefone,email,saldo,limite,senha,cadastro_realizado,bloquear,historico)
